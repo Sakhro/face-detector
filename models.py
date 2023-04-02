@@ -22,15 +22,14 @@ class Net(nn.Module):
         self.conv1 = nn.Conv2d(1, 32, 8)    # (224-8)/1 + 1 = 216
         self.conv2 = nn.Conv2d(32, 64, 5)   # (108-5)/1 + 1 = 104
         self.conv3 = nn.Conv2d(64, 128, 3)  # (52-3)/1 + 1 = 50
-        self.conv4 = nn.Conv2d(128, 256, 2)  # (25-2)/1 + 1 = 23
-        self.conv5 = nn.Conv2d(256, 512, 1)  # (12-1)/1 + 1 = 12
+        self.conv3_drop = nn.Dropout(p=0.4)
 
         self.pool = nn.MaxPool2d(2, 2)
 
-        self.fc1 = nn.Linear(512*6*6, 1024)
-        self.fc1_drop = nn.Dropout(p=0.5)
+        self.fc1 = nn.Linear(128*25*25, 1024)
+        self.fc1_drop = nn.Dropout(p=0.4)
         self.fc2 = nn.Linear(1024, 512)
-        self.fc2_drop = nn.Dropout(p=0.5)
+        self.fc2_drop = nn.Dropout(p=0.4)
         self.fc3 = nn.Linear(512, 136)
 
         # Note that among the layers to add, consider including:
@@ -42,8 +41,7 @@ class Net(nn.Module):
         x = self.pool(F.relu(self.conv1(x)))
         x = self.pool(F.relu(self.conv2(x)))
         x = self.pool(F.relu(self.conv3(x)))
-        x = self.pool(F.relu(self.conv4(x)))
-        x = self.pool(F.relu(self.conv5(x)))
+        x = self.conv3_drop(x)
 
         x = x.view(x.size(0), -1)
 
